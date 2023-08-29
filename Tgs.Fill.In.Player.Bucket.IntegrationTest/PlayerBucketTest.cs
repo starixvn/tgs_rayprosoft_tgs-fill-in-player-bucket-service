@@ -72,94 +72,11 @@ public class PlayerBucketTest
             Arg.Is((RedisKey)rounds[0].GetRedisKey(now)),
             Arg.Is(TimeSpan.FromDays(49)));
 
-        await fakePlayerBucketService.Received(1).FillInPlayerMainBucketAsync(
-            Arg.Is(roundId),
-            Arg.Is("playerCode"),
-            Arg.Is((decimal)100),
-            Arg.Any<string>(),
-            Arg.Any<CancellationToken>());
-
         await fakePlayerBucketService.Received(1).FillInPlayerGameTypeBucketAsync(
-            Arg.Any<IEnumerable<string>>(),
+            Arg.Any<BucketGameType>(),
             Arg.Is(roundId),
             Arg.Is("playerCode"),
             Arg.Is((decimal)100),
-            Arg.Any<string>(),
-            Arg.Any<CancellationToken>());
-    }
-
-    [Test]
-    public async Task Fill_In_Player_bucket_But_No_Matched_Game_Type()
-    {
-        var fakeTgsRepository = Substitute.For<ITgsRepository>();
-        var fakeRedisConnectionFactory = Substitute.For<IRedisConnectionFactory>();
-        var fakeRedisDatabase = Substitute.For<IDatabase>();
-        var fakePlayerBucketService = Substitute.For<IPlayerBucketService>();
-
-        var roundId = Guid.NewGuid();
-
-        var rounds = new PlayerRoundEntity[]
-        {
-            new()
-            {
-                RoundId = roundId,
-                GameId = 1,
-                PlayerCode = "playerCode",
-                ExternalRoundId = "external1",
-                Turnover = 100,
-                EffectiveBettingPercentage = 100,
-                GameType = GameType.Sportsbook
-            }
-        };
-
-        fakeTgsRepository.GetPlayerRoundsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
-            .Returns(rounds.ToAsyncEnumerable());
-
-        fakePlayerBucketService.GetBrandBucketTypesAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new[] { BucketGameType.CardGame });
-
-        fakeRedisConnectionFactory.GetDataBase()
-            .Returns(fakeRedisDatabase);
-
-        fakeRedisDatabase.SetContainsAsync(Arg.Any<RedisKey>(), Arg.Any<RedisValue>()).Returns(false);
-
-        await using var web = new TestApplication(builder =>
-            builder.ConfigureServices(service =>
-                {
-                    service.AddSingleton(fakeTgsRepository);
-                    service.AddSingleton(fakeRedisConnectionFactory);
-                    service.AddSingleton(fakeRedisDatabase);
-                    service.AddSingleton(fakePlayerBucketService);
-                }
-            ));
-        var httpClient = web.CreateClient();
-
-        var sut = new FillInPlayerBucketClient(httpClient);
-
-        var now = DateTime.Parse("2023-08-01 00:15:00Z");
-
-        await sut.FillPlayerBucketMinutelyAsync(new(now));
-
-        await fakeRedisDatabase.Received(1).SetAddAsync(
-            Arg.Is((RedisKey)rounds[0].GetRedisKey(now)),
-            Arg.Is((RedisValue)"external1"));
-
-        await fakeRedisDatabase.Received(1).KeyExpireAsync(
-            Arg.Is((RedisKey)rounds[0].GetRedisKey(now)),
-            Arg.Is(TimeSpan.FromDays(49)));
-
-        await fakePlayerBucketService.Received(1).FillInPlayerMainBucketAsync(
-            Arg.Is(roundId),
-            Arg.Is("playerCode"),
-            Arg.Is((decimal)100),
-            Arg.Any<string>(),
-            Arg.Any<CancellationToken>());
-
-        await fakePlayerBucketService.Received(0).FillInPlayerGameTypeBucketAsync(
-            Arg.Any<IEnumerable<string>>(),
-            Arg.Any<Guid>(),
-            Arg.Any<string>(),
-            Arg.Any<decimal>(),
             Arg.Any<string>(),
             Arg.Any<CancellationToken>());
     }
@@ -221,15 +138,8 @@ public class PlayerBucketTest
             Arg.Any<RedisKey>(),
             Arg.Any<TimeSpan>());
 
-        await fakePlayerBucketService.Received(0).FillInPlayerMainBucketAsync(
-            Arg.Any<Guid>(),
-            Arg.Any<string>(),
-            Arg.Any<decimal>(),
-            Arg.Any<string>(),
-            Arg.Any<CancellationToken>());
-
         await fakePlayerBucketService.Received(0).FillInPlayerGameTypeBucketAsync(
-            Arg.Any<IEnumerable<string>>(),
+            Arg.Any<BucketGameType>(),
             Arg.Any<Guid>(),
             Arg.Any<string>(),
             Arg.Any<decimal>(),
@@ -275,15 +185,8 @@ public class PlayerBucketTest
             Arg.Any<RedisKey>(),
             Arg.Any<TimeSpan>());
 
-        await fakePlayerBucketService.Received(0).FillInPlayerMainBucketAsync(
-            Arg.Any<Guid>(),
-            Arg.Any<string>(),
-            Arg.Any<decimal>(),
-            Arg.Any<string>(),
-            Arg.Any<CancellationToken>());
-
         await fakePlayerBucketService.Received(0).FillInPlayerGameTypeBucketAsync(
-            Arg.Any<IEnumerable<string>>(),
+            Arg.Any<BucketGameType>(),
             Arg.Any<Guid>(),
             Arg.Any<string>(),
             Arg.Any<decimal>(),

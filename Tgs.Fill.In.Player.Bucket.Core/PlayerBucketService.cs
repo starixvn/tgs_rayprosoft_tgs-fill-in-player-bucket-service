@@ -27,8 +27,7 @@ internal class PlayerBucketService : IPlayerBucketService
             $"brandBucketType:{brandId}",
             async cacheEntry =>
             {
-                _ = cacheEntry.SetSlidingExpiration(TimeSpan.FromHours(1));
-                cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1);
+                _ = cacheEntry.SetAbsoluteExpiration(TimeSpan.FromDays(1));
 
                 var bucketTypes = _playerBucketClient.GetBrandBucketTypesAsync(brandId, cancellationToken);
 
@@ -38,28 +37,18 @@ internal class PlayerBucketService : IPlayerBucketService
             });
     }
 
-    public async Task FillInPlayerMainBucketAsync(Guid roundId, string playerCode, decimal bucketAmount, string remark,
-        CancellationToken cancellationToken)
-    {
-        await _playerBucketClient.FillInBucketAsync(
-            playerCode,
-            bucketAmount,
-            FillType.Game,
-            roundId.ToString(),
-            remark,
-            cancellationToken).ConfigureAwait(false);
-    }
-
-    public async Task FillInPlayerGameTypeBucketAsync(IEnumerable<string> gameTypes, Guid roundId, string playerCode,
+    public async Task FillInPlayerGameTypeBucketAsync(BucketGameType gameType, Guid roundId, string playerCode,
         decimal bucketAmount, string remark, CancellationToken cancellationToken)
     {
+        var bucketTypes = await GetBrandBucketTypesAsync(Guid.NewGuid(), cancellationToken);
+
         await _playerBucketForTypesClient.FillInBucketForBucketTypesAsync(
             playerCode,
             bucketAmount,
             FillType.Game,
             roundId.ToString(),
             remark,
-            gameTypes,
+            bucketTypes?.Intersect(new[]{gameType}).Select(t => t.ToString()),
             cancellationToken).ConfigureAwait(false);
     }
 }

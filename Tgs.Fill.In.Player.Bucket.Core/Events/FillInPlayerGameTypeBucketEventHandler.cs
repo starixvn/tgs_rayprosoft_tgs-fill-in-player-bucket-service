@@ -20,9 +20,6 @@ internal class FillInPlayerGameTypeBucketEventHandler : INotificationHandler<Fil
 
     public async Task Handle(FillInPlayerBucketEvent @event, CancellationToken cancellationToken)
     {
-        var bucketTypes =
-            await _playerBucketService.GetBrandBucketTypesAsync(@event.PlayerRound.BrandId, cancellationToken);
-
         var playerBucketType = @event.PlayerRound.GetBucketGameType();
 
         _logger.LogInformation(
@@ -30,26 +27,23 @@ internal class FillInPlayerGameTypeBucketEventHandler : INotificationHandler<Fil
             @event.PlayerRound.PlayerCode, @event.PlayerRound.GameType, playerBucketType,
             @event.PlayerRound.GetBucketAmount(), @event.StartDateTime);
 
-        if (bucketTypes is not null && bucketTypes.Contains(playerBucketType))
-        {
-            await Policy.Handle<Exception>()
-                .RetryAsync(
-                    3,
-                    (exception, retryCount) => _logger.LogError(
-                        "PlayerCode:{PlayerCode} BucketAmount:{BucketAmount} retryCount:{retryCount} Exception:{exception}",
+        await Policy.Handle<Exception>()
+            .RetryAsync(
+                3,
+                (exception, retryCount) => _logger.LogError(
+                    "PlayerCode:{PlayerCode} BucketAmount:{BucketAmount} retryCount:{retryCount} Exception:{exception}",
+                    @event.PlayerRound.PlayerCode,
+                    @event.PlayerRound.GetBucketAmount(),
+                    retryCount,
+                    exception))
+            .ExecuteAsync(
+                async () =>
+                    await _playerBucketService.FillInPlayerGameTypeBucketAsync(
+                        playerBucketType,
+                        @event.PlayerRound.RoundId,
                         @event.PlayerRound.PlayerCode,
                         @event.PlayerRound.GetBucketAmount(),
-                        retryCount,
-                        exception))
-                .ExecuteAsync(
-                    async () =>
-                        await _playerBucketService.FillInPlayerGameTypeBucketAsync(
-                            new[] { playerBucketType.ToString() },
-                            @event.PlayerRound.RoundId,
-                            @event.PlayerRound.PlayerCode,
-                            @event.PlayerRound.GetBucketAmount(),
-                            "",
-                            cancellationToken).ConfigureAwait(false));
-        }
+                        "",
+                        cancellationToken).ConfigureAwait(false));
     }
 }
