@@ -4,49 +4,23 @@ namespace Tgs.Fill.In.Player.Bucket.Domain;
 
 public static class Consts
 {
-    public static GameType[] SlotGroup =
-    {
-        GameType.Fishing,
-        GameType.FishingLobby,
-        GameType.Arcade,
-        GameType.ArcadeLobby,
-        GameType.Slot,
-        GameType.TableGame
-    };
-
-    public static GameType[] SportsGroup =
-    {
-        GameType.Sportsbook,
-        GameType.ESports
-    };
-
-    public static GameType[] VirtualSportsGroup =
-    {
-        GameType.VirtualSports,
-        GameType.VirtualSportsLobby
-    };
-
-    public static GameType[] LiveDealerGroup =
-    {
-        GameType.LiveDealer,
-        GameType.LiveDealerLobby
-    };
-
-    public static GameType[] CardGameGroup =
-    {
-        GameType.CardGame,
-        GameType.CardGameLobby
-    };
-
-    public static GameType[] LotteryGroup =
-    {
-        GameType.Lottery,
-        GameType.LotteryLobby
-    };
-
     public static IImmutableDictionary<GameType, BucketGameType> GameTypeGroups
         => new Dictionary<GameType, BucketGameType>
         {
-            {GameType.Sportsbook, BucketGameType.Sportsbook}
+            {GameType.Sportsbook, BucketGameType.Sportsbook},
+            {GameType.ESports, BucketGameType.Sportsbook},
+            {GameType.VirtualSports, BucketGameType.VirtualSports},
+            {GameType.VirtualSportsLobby, BucketGameType.VirtualSports},
+            {GameType.LiveDealer, BucketGameType.LiveDealer},
+            {GameType.LiveDealerLobby, BucketGameType.LiveDealer},
+            {GameType.CardGame, BucketGameType.CardGame},
+            {GameType.CardGameLobby, BucketGameType.CardGame},
+            {GameType.Lottery, BucketGameType.Lottery},
+            {GameType.LotteryLobby, BucketGameType.Lottery},
+            {GameType.Slot, BucketGameType.Slot},
+            {GameType.Fishing, BucketGameType.Slot},
+            {GameType.Arcade, BucketGameType.Slot},
+            {GameType.ArcadeLobby, BucketGameType.Slot},
+            {GameType.TableGame, BucketGameType.Slot}
         }.ToImmutableDictionary();
 }

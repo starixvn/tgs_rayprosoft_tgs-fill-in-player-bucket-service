@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Tgs.Fill.In.Player.Bucket.Domain.Events;
 using Tgs.Fill.In.Player.Bucket.Domain.Interfaces;
-using Tgs.Fill.In.Player.Bucket.Redis;
-using Tgs.Service.PlayerBuckets;
 
 namespace Tgs.Fill.In.Player.Bucket.Core.Events
 {
@@ -26,17 +19,21 @@ namespace Tgs.Fill.In.Player.Bucket.Core.Events
 
         public async Task Handle(FillInPlayerBucketEvent @event, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Fill player game type bucket execute start time {request.StartTime}.", @event.StartDateTime);
-
             var bucketTypes = await _playerBucketService.GetBrandBucketTypesAsync(@event.PlayerRound.BrandId, cancellationToken);
 
-            if (bucketTypes is not null && bucketTypes.Contains(@event.PlayerRound.GetBucketGameType()))
+            var playerBucketType = @event.PlayerRound.GetBucketGameType();
+
+            _logger.LogInformation(
+                "Fill player game bucket type {playerCode} was replaced ({gameType}) with ({gameBucketType}) {bucketAmount} bucket amount execute start time {StartTime}.",
+                @event.PlayerRound.PlayerCode, @event.PlayerRound.GameType, playerBucketType, @event.PlayerRound.GetBucketAmount(), @event.StartDateTime);
+
+            if (bucketTypes is not null && bucketTypes.Contains(playerBucketType))
             {
                 await Policy.Handle<Exception>()
                     .RetryAsync(
                         3,
                         (exception, retryCount) => _logger.LogError(
-                            "PlayerCode:{model.PlayerCode} BucketAmount:{model.BucketAmount} retryCount:{retryCount} Exception:{exception}",
+                            "PlayerCode:{PlayerCode} BucketAmount:{BucketAmount} retryCount:{retryCount} Exception:{exception}",
                             @event.PlayerRound.PlayerCode,
                             @event.PlayerRound.GetBucketAmount(),
                             retryCount,
@@ -44,7 +41,7 @@ namespace Tgs.Fill.In.Player.Bucket.Core.Events
                     .ExecuteAsync(
                         async () =>
                             await _playerBucketService.FillInPlayerGameTypeBucketAsync(
-                                new[] { "" },
+                                new[] { playerBucketType.ToString() },
                                 @event.PlayerRound.RoundId,
                                 @event.PlayerRound.PlayerCode,
                                 @event.PlayerRound.GetBucketAmount(),

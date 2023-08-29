@@ -17,7 +17,7 @@ namespace Tgs.Fill.In.Player.Bucket.Service.Controllers
         }
 
         [HttpPost("fillIn/{startDate}")]
-        public Task FillInPlayerBucketAsync(DateTimeOffset startDate)
+        public Task FillInPlayerBucketAsync(DateTime startDate)
         {
             return _mediator.Send(new FillInPlayerBucketRequest(startDate));
         }
