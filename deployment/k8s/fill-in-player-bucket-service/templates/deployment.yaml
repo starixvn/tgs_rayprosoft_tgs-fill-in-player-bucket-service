@@ -74,7 +74,7 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          - name: monitor
+        - name: monitor
           image: otel/opentelemetry-collector:0.62.1
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
