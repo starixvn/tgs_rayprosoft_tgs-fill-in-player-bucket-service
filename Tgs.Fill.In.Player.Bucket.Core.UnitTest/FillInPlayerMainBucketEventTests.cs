@@ -1,44 +1,37 @@
-using MediatR;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
-using StackExchange.Redis;
 using Tgs.Fill.In.Player.Bucket.Core.Events;
-using Tgs.Fill.In.Player.Bucket.Domain;
 using Tgs.Fill.In.Player.Bucket.Domain.Events;
 using Tgs.Fill.In.Player.Bucket.Domain.Interfaces;
-using Tgs.Fill.In.Player.Bucket.Domain.Models;
-using Tgs.Fill.In.Player.Bucket.Redis;
 
-namespace Tgs.Fill.In.Player.Bucket.Core.UnitTest
+namespace Tgs.Fill.In.Player.Bucket.Core.UnitTest;
+
+public class FillInPlayerMainBucketEventTests
 {
-    public class FillInPlayerMainBucketEventTests
+    [Test]
+    public async Task Fill_In_Player_Main_Bucket()
     {
-        [Test]
-        public async Task Fill_In_Player_Main_Bucket()
+        var fakePlayerBucketService = Substitute.For<IPlayerBucketService>();
+
+        var sut = new FillInPlayerMainBucketEventHandler(
+            NullLogger<FillInPlayerMainBucketEventHandler>.Instance,
+            fakePlayerBucketService);
+
+        var request = new FillInPlayerBucketEvent(new()
         {
-            var fakePlayerBucketService = Substitute.For<IPlayerBucketService>();
+            RoundId = Guid.NewGuid(),
+            PlayerCode = "playerCode",
+            Turnover = 100,
+            EffectiveBettingPercentage = 100
+        }, DateTime.UtcNow);
 
-            var sut = new FillInPlayerMainBucketEventHandler(
-                NullLogger<FillInPlayerMainBucketEventHandler>.Instance,
-                fakePlayerBucketService);
+        await sut.Handle(request, default);
 
-            var request = new FillInPlayerBucketEvent(new PlayerRoundEntity
-            {
-                RoundId = Guid.NewGuid(),
-                PlayerCode = "playerCode",
-                Turnover = 100,
-                EffectiveBettingPercentage = 100,
-            }, DateTime.UtcNow);
-
-            await sut.Handle(request, default);
-
-            await fakePlayerBucketService.Received(1).FillInPlayerMainBucketAsync(
-                Arg.Is(request.PlayerRound.RoundId), 
-                Arg.Is(request.PlayerRound.PlayerCode),
-                Arg.Is((decimal)100), 
-                Arg.Any<string>(), 
-                Arg.Any<CancellationToken>());
-        }
+        await fakePlayerBucketService.Received(1).FillInPlayerMainBucketAsync(
+            Arg.Is(request.PlayerRound.RoundId),
+            Arg.Is(request.PlayerRound.PlayerCode),
+            Arg.Is((decimal)100),
+            Arg.Any<string>(),
+            Arg.Any<CancellationToken>());
     }
 }

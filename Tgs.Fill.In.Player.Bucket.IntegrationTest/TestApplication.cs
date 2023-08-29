@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,15 +9,13 @@ using Microsoft.Extensions.Options;
 using NSubstitute;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
+using Tgs.Fill.In.Player.Bucket.Domain.Interfaces;
+using Tgs.Fill.In.Player.Bucket.Redis;
 using Tgs.Fill.In.Player.Bucket.Repositories.Entities;
 
 namespace Tgs.Fill.In.Player.Bucket.IntegrationTest;
 
 extern alias service;
-
-using Microsoft.AspNetCore.Mvc.Testing;
-using Tgs.Fill.In.Player.Bucket.Domain.Interfaces;
-using Tgs.Fill.In.Player.Bucket.Redis;
 
 internal class TestApplication : WebApplicationFactory<service::Program>
 {

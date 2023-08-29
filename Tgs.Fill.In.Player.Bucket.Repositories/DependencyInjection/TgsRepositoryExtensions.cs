@@ -7,7 +7,7 @@ namespace Tgs.Fill.In.Player.Bucket.Repositories.DependencyInjection;
 
 public static class TgsRepositoryExtensions
 {
-	public static IServiceCollection AddRepositories(this IServiceCollection services,
+    public static IServiceCollection AddRepositories(this IServiceCollection services,
         Action<IServiceProvider, DbContextOptionsBuilder> dbContextConfigure)
     {
         services
@@ -15,5 +15,5 @@ public static class TgsRepositoryExtensions
             .AddTransient<ITgsRepository, TgsRepository>();
 
         return services;
-	}
+    }
 }

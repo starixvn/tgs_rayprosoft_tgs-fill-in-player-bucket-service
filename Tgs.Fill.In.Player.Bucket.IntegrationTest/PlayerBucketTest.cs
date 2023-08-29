@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using StackExchange.Redis;
 using Tgs.Fill.In.Player.Bucket.Client;
-using Tgs.Fill.In.Player.Bucket.Client.Models;
 using Tgs.Fill.In.Player.Bucket.Domain;
 using Tgs.Fill.In.Player.Bucket.Domain.Interfaces;
 using Tgs.Fill.In.Player.Bucket.Domain.Models;
@@ -24,16 +23,19 @@ public class PlayerBucketTest
         var roundId = Guid.NewGuid();
 
         fakeTgsRepository.GetPlayerRoundsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
-            .Returns(new PlayerRoundEntity[]{new PlayerRoundEntity
+            .Returns(new PlayerRoundEntity[]
             {
-                RoundId = roundId,
-                GameId = 1,
-                PlayerCode = "playerCode",
-                ExternalRoundId = "external1",
-                Turnover = 100,
-                EffectiveBettingPercentage = 100,
-                GameType = GameType.CardGame
-            }}.ToAsyncEnumerable());
+                new()
+                {
+                    RoundId = roundId,
+                    GameId = 1,
+                    PlayerCode = "playerCode",
+                    ExternalRoundId = "external1",
+                    Turnover = 100,
+                    EffectiveBettingPercentage = 100,
+                    GameType = GameType.CardGame
+                }
+            }.ToAsyncEnumerable());
 
         fakePlayerBucketService.GetBrandBucketTypesAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new[] { BucketGameType.CardGame });
@@ -56,7 +58,7 @@ public class PlayerBucketTest
 
         var sut = new FillInPlayerBucketClient(httpClient);
 
-        await sut.FillPlayerBucketMinutelyAsync(new FillPlayerBucketMinutelyModel(DateTime.Parse("2023-08-01 00:15:00Z")));
+        await sut.FillPlayerBucketMinutelyAsync(new(DateTime.Parse("2023-08-01 00:15:00Z")));
 
         await fakeRedisDatabase.Received(1).SetAddAsync(
             Arg.Is((RedisKey)"fillIn:2023/8/1:1:playerCode"),
@@ -93,16 +95,19 @@ public class PlayerBucketTest
         var roundId = Guid.NewGuid();
 
         fakeTgsRepository.GetPlayerRoundsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
-            .Returns(new PlayerRoundEntity[]{new PlayerRoundEntity
+            .Returns(new PlayerRoundEntity[]
             {
-                RoundId = roundId,
-                GameId = 1,
-                PlayerCode = "playerCode",
-                ExternalRoundId = "external1",
-                Turnover = 100,
-                EffectiveBettingPercentage = 100,
-                GameType = GameType.Sportsbook
-            }}.ToAsyncEnumerable());
+                new()
+                {
+                    RoundId = roundId,
+                    GameId = 1,
+                    PlayerCode = "playerCode",
+                    ExternalRoundId = "external1",
+                    Turnover = 100,
+                    EffectiveBettingPercentage = 100,
+                    GameType = GameType.Sportsbook
+                }
+            }.ToAsyncEnumerable());
 
         fakePlayerBucketService.GetBrandBucketTypesAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new[] { BucketGameType.CardGame });
@@ -114,18 +119,18 @@ public class PlayerBucketTest
 
         await using var web = new TestApplication(builder =>
             builder.ConfigureServices(service =>
-            {
-                service.AddSingleton(fakeTgsRepository);
-                service.AddSingleton(fakeRedisConnectionFactory);
-                service.AddSingleton(fakeRedisDatabase);
-                service.AddSingleton(fakePlayerBucketService);
-            }
+                {
+                    service.AddSingleton(fakeTgsRepository);
+                    service.AddSingleton(fakeRedisConnectionFactory);
+                    service.AddSingleton(fakeRedisDatabase);
+                    service.AddSingleton(fakePlayerBucketService);
+                }
             ));
         var httpClient = web.CreateClient();
 
         var sut = new FillInPlayerBucketClient(httpClient);
 
-        await sut.FillPlayerBucketMinutelyAsync(new FillPlayerBucketMinutelyModel(DateTime.Parse("2023-08-01 00:15:00Z")));
+        await sut.FillPlayerBucketMinutelyAsync(new(DateTime.Parse("2023-08-01 00:15:00Z")));
 
         await fakeRedisDatabase.Received(1).SetAddAsync(
             Arg.Is((RedisKey)"fillIn:2023/8/1:1:playerCode"),
@@ -162,16 +167,19 @@ public class PlayerBucketTest
         var roundId = Guid.NewGuid();
 
         fakeTgsRepository.GetPlayerRoundsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
-            .Returns(new PlayerRoundEntity[]{new PlayerRoundEntity
+            .Returns(new PlayerRoundEntity[]
             {
-                RoundId = roundId,
-                GameId = 1,
-                PlayerCode = "playerCode",
-                ExternalRoundId = "external1",
-                Turnover = 100,
-                EffectiveBettingPercentage = 100,
-                GameType = GameType.Sportsbook
-            }}.ToAsyncEnumerable());
+                new()
+                {
+                    RoundId = roundId,
+                    GameId = 1,
+                    PlayerCode = "playerCode",
+                    ExternalRoundId = "external1",
+                    Turnover = 100,
+                    EffectiveBettingPercentage = 100,
+                    GameType = GameType.Sportsbook
+                }
+            }.ToAsyncEnumerable());
 
         fakeRedisConnectionFactory.GetDataBase()
             .Returns(fakeRedisDatabase);
@@ -180,25 +188,25 @@ public class PlayerBucketTest
 
         await using var web = new TestApplication(builder =>
             builder.ConfigureServices(service =>
-            {
-                service.AddSingleton(fakeTgsRepository);
-                service.AddSingleton(fakeRedisConnectionFactory);
-                service.AddSingleton(fakeRedisDatabase);
-                service.AddSingleton(fakePlayerBucketService);
-            }
+                {
+                    service.AddSingleton(fakeTgsRepository);
+                    service.AddSingleton(fakeRedisConnectionFactory);
+                    service.AddSingleton(fakeRedisDatabase);
+                    service.AddSingleton(fakePlayerBucketService);
+                }
             ));
         var httpClient = web.CreateClient();
 
         var sut = new FillInPlayerBucketClient(httpClient);
 
-        await sut.FillPlayerBucketMinutelyAsync(new FillPlayerBucketMinutelyModel(DateTime.Parse("2023-08-01 00:15:00Z")));
+        await sut.FillPlayerBucketMinutelyAsync(new(DateTime.Parse("2023-08-01 00:15:00Z")));
 
         await fakeRedisDatabase.Received(1).SetContainsAsync(
-            Arg.Any<RedisKey>(), 
+            Arg.Any<RedisKey>(),
             Arg.Any<RedisValue>());
 
         await fakeRedisDatabase.Received(0).SetAddAsync(
-            Arg.Any<RedisKey>(), 
+            Arg.Any<RedisKey>(),
             Arg.Any<RedisValue>());
 
         await fakeRedisDatabase.Received(0).KeyExpireAsync(
@@ -234,18 +242,18 @@ public class PlayerBucketTest
 
         await using var web = new TestApplication(builder =>
             builder.ConfigureServices(service =>
-            {
-                service.AddSingleton(fakeTgsRepository);
-                service.AddSingleton(fakeRedisConnectionFactory);
-                service.AddSingleton(fakeRedisDatabase);
-                service.AddSingleton(fakePlayerBucketService);
-            }
+                {
+                    service.AddSingleton(fakeTgsRepository);
+                    service.AddSingleton(fakeRedisConnectionFactory);
+                    service.AddSingleton(fakeRedisDatabase);
+                    service.AddSingleton(fakePlayerBucketService);
+                }
             ));
         var httpClient = web.CreateClient();
 
         var sut = new FillInPlayerBucketClient(httpClient);
 
-        await sut.FillPlayerBucketMinutelyAsync(new FillPlayerBucketMinutelyModel(DateTime.Parse("2023-08-01 00:15:00Z")));
+        await sut.FillPlayerBucketMinutelyAsync(new(DateTime.Parse("2023-08-01 00:15:00Z")));
 
         await fakeRedisDatabase.Received(0).SetContainsAsync(
             Arg.Any<RedisKey>(),
@@ -274,5 +282,4 @@ public class PlayerBucketTest
             Arg.Any<string>(),
             Arg.Any<CancellationToken>());
     }
-
 }

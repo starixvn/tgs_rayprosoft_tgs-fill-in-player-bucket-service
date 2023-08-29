@@ -10,12 +10,13 @@ namespace Tgs.Fill.In.Player.Bucket.Repositories;
 
 public class TgsRepository : ITgsRepository
 {
-	private readonly tgsContext _context;
+    private readonly tgsContext _context;
 
     public TgsRepository(tgsContext context)
     {
         _context = context;
     }
+
     public async IAsyncEnumerable<PlayerRoundEntity> GetPlayerRoundsAsync(DateTime from, DateTime to,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
@@ -53,7 +54,7 @@ public class TgsRepository : ITgsRepository
 		turnover Turnover,
 		effective_betting_percentage EffectiveBettingPercentage
 		from rounds;"
-        ;
+            ;
 
         var conn = _context.Database.GetDbConnection();
         var transaction = _context.Database.CurrentTransaction?.GetDbTransaction();
@@ -67,9 +68,6 @@ public class TgsRepository : ITgsRepository
 
         var rowParser = response.GetRowParser<PlayerRoundEntity>();
 
-        while (await response.ReadAsync(cancellationToken).ConfigureAwait(false))
-        {
-            yield return rowParser(response);
-        }
+        while (await response.ReadAsync(cancellationToken).ConfigureAwait(false)) yield return rowParser(response);
     }
 }

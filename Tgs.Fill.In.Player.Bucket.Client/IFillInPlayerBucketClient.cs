@@ -1,9 +1,8 @@
 ﻿using Tgs.Fill.In.Player.Bucket.Client.Models;
 
-namespace Tgs.Fill.In.Player.Bucket.Client
+namespace Tgs.Fill.In.Player.Bucket.Client;
+
+public interface IFillInPlayerBucketClient
 {
-	public interface IFillInPlayerBucketClient
-	{
-		Task FillPlayerBucketMinutelyAsync(FillPlayerBucketMinutelyModel request);
-	}
+    Task FillPlayerBucketMinutelyAsync(FillPlayerBucketMinutelyModel request);
 }

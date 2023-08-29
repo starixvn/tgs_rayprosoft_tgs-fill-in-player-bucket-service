@@ -4,5 +4,5 @@ namespace Tgs.Fill.In.Player.Bucket.Redis;
 
 public interface IRedisConnectionFactory
 {
-	public IDatabase GetDataBase();
+    public IDatabase GetDataBase();
 }

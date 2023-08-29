@@ -5,15 +5,15 @@ namespace Tgs.Fill.In.Player.Bucket.Redis.DependencyInjection;
 public static class TgsRedisExtensions
 {
     public static IServiceCollection AddRedis(
-		this IServiceCollection service,
-		Action<RedisOptions, IServiceProvider> configure)
-	{
-		_ = service
-			.AddOptions<RedisOptions>()
-			.Configure(configure)
-			.Services
-			.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
+        this IServiceCollection service,
+        Action<RedisOptions, IServiceProvider> configure)
+    {
+        _ = service
+            .AddOptions<RedisOptions>()
+            .Configure(configure)
+            .Services
+            .AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
 
-		return service;
-	}
+        return service;
+    }
 }

@@ -1,21 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MediatR" Version="12.1.1" />
-    <PackageReference Include="Polly" Version="7.2.4" />
-    <PackageReference Include="Tgs.PlayerBucket.Client" Version="0.1.1" />
-    <PackageReference Include="Tgs.PlayerBucketType.Client" Version="0.0.7" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="MediatR" Version="12.1.1" />
+		<PackageReference Include="Polly" Version="7.2.4" />
+		<PackageReference Include="Tgs.PlayerBucket.Client" Version="0.1.1" />
+		<PackageReference Include="Tgs.PlayerBucketType.Client" Version="0.0.7" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Tgs.Fill.In.Player.Bucket.Domain\Tgs.Fill.In.Player.Bucket.Domain.csproj" />
-    <ProjectReference Include="..\Tgs.Fill.In.Player.Bucket.Redis\Tgs.Fill.In.Player.Bucket.Redis.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Tgs.Fill.In.Player.Bucket.Domain\Tgs.Fill.In.Player.Bucket.Domain.csproj" />
+		<ProjectReference Include="..\Tgs.Fill.In.Player.Bucket.Redis\Tgs.Fill.In.Player.Bucket.Redis.csproj" />
+	</ItemGroup>
 
 </Project>

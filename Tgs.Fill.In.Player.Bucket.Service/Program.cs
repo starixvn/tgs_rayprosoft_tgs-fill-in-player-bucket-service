@@ -25,7 +25,8 @@ builder.Services
     })
     .AddPlayerBucketClient(httpClientBuilder => httpClientBuilder
         .ConfigureHttpClient(httpClient => httpClient.BaseAddress =
-            builder.Configuration.GetValue<Uri>("FillInPlayerBucket:PlayerBucketBaseUrl"))); ;
+            builder.Configuration.GetValue<Uri>("FillInPlayerBucket:PlayerBucketBaseUrl")));
+;
 
 builder.Services
     .AddMessageQueue()

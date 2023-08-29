@@ -2,28 +2,29 @@
 using System.Text.Json;
 using Tgs.Fill.In.Player.Bucket.Client.Models;
 
-namespace Tgs.Fill.In.Player.Bucket.Client
+namespace Tgs.Fill.In.Player.Bucket.Client;
+
+public class FillInPlayerBucketClient : IFillInPlayerBucketClient
 {
-    public class FillInPlayerBucketClient : IFillInPlayerBucketClient
+    private readonly HttpClient _client;
+
+    private readonly JsonSerializerOptions _jsonSerializerOptions = new()
+        { PropertyNameCaseInsensitive = true };
+
+    public FillInPlayerBucketClient(HttpClient client)
     {
-        private readonly HttpClient _client;
-        private readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        _client = client;
+    }
 
-        public FillInPlayerBucketClient(HttpClient client)
+    public async Task FillPlayerBucketMinutelyAsync(
+        FillPlayerBucketMinutelyModel request)
+    {
+        var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"/api/playerBucket/fillIn/{request.StartDate:u}")
         {
-            _client = client;
-        }
+            Content = new StringContent("", Encoding.UTF8, "application/json")
+        };
+        var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
 
-        public async Task FillPlayerBucketMinutelyAsync(
-            FillPlayerBucketMinutelyModel request)
-        {
-            var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"/api/playerBucket/fillIn/{request.StartDate:u}")
-            {
-                Content = new StringContent("", Encoding.UTF8, "application/json")
-            };
-            var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
-
-            _ = response.EnsureSuccessStatusCode();
-        }
+        _ = response.EnsureSuccessStatusCode();
     }
 }
