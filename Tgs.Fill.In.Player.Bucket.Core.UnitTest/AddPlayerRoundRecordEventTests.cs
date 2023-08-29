@@ -67,10 +67,10 @@ public class AddPlayerRoundRecordEventTests
 
         await sut.Handle(request, default);
 
-        await fakeRedisDatabase.Received(1).SetAddAsync(Arg.Is((RedisKey)"fillIn:2023/8/28:1:playerCode"),
+        await fakeRedisDatabase.Received(1).SetAddAsync(Arg.Is((RedisKey)request.PlayerRound.GetRedisKey(now)),
             Arg.Is((RedisValue)"external1"));
 
-        await fakeRedisDatabase.Received(1).KeyExpireAsync(Arg.Is((RedisKey)"fillIn:2023/8/28:1:playerCode"),
+        await fakeRedisDatabase.Received(1).KeyExpireAsync(Arg.Is((RedisKey)request.PlayerRound.GetRedisKey(now)),
             Arg.Is(TimeSpan.FromDays(49)));
 
         await fakeMediator.Received(1).Publish(Arg.Any<FillInPlayerBucketEvent>());

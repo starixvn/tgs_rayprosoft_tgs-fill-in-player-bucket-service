@@ -22,20 +22,22 @@ public class PlayerBucketTest
 
         var roundId = Guid.NewGuid();
 
-        fakeTgsRepository.GetPlayerRoundsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
-            .Returns(new PlayerRoundEntity[]
+        var rounds = new PlayerRoundEntity[]
+        {
+            new()
             {
-                new()
-                {
-                    RoundId = roundId,
-                    GameId = 1,
-                    PlayerCode = "playerCode",
-                    ExternalRoundId = "external1",
-                    Turnover = 100,
-                    EffectiveBettingPercentage = 100,
-                    GameType = GameType.CardGame
-                }
-            }.ToAsyncEnumerable());
+                RoundId = roundId,
+                GameId = 1,
+                PlayerCode = "playerCode",
+                ExternalRoundId = "external1",
+                Turnover = 100,
+                EffectiveBettingPercentage = 100,
+                GameType = GameType.CardGame
+            }
+        };
+
+        fakeTgsRepository.GetPlayerRoundsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(rounds.ToAsyncEnumerable());
 
         fakePlayerBucketService.GetBrandBucketTypesAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new[] { BucketGameType.CardGame });
@@ -58,14 +60,16 @@ public class PlayerBucketTest
 
         var sut = new FillInPlayerBucketClient(httpClient);
 
-        await sut.FillPlayerBucketMinutelyAsync(new(DateTime.Parse("2023-08-01 00:15:00Z")));
+        var now = DateTime.Parse("2023-08-01 00:15:00Z");
+
+        await sut.FillPlayerBucketMinutelyAsync(new(now));
 
         await fakeRedisDatabase.Received(1).SetAddAsync(
-            Arg.Is((RedisKey)"fillIn:2023/8/1:1:playerCode"),
+            Arg.Is((RedisKey)rounds[0].GetRedisKey(now)),
             Arg.Is((RedisValue)"external1"));
 
         await fakeRedisDatabase.Received(1).KeyExpireAsync(
-            Arg.Is((RedisKey)"fillIn:2023/8/1:1:playerCode"),
+            Arg.Is((RedisKey)rounds[0].GetRedisKey(now)),
             Arg.Is(TimeSpan.FromDays(49)));
 
         await fakePlayerBucketService.Received(1).FillInPlayerMainBucketAsync(
@@ -94,20 +98,22 @@ public class PlayerBucketTest
 
         var roundId = Guid.NewGuid();
 
-        fakeTgsRepository.GetPlayerRoundsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
-            .Returns(new PlayerRoundEntity[]
+        var rounds = new PlayerRoundEntity[]
+        {
+            new()
             {
-                new()
-                {
-                    RoundId = roundId,
-                    GameId = 1,
-                    PlayerCode = "playerCode",
-                    ExternalRoundId = "external1",
-                    Turnover = 100,
-                    EffectiveBettingPercentage = 100,
-                    GameType = GameType.Sportsbook
-                }
-            }.ToAsyncEnumerable());
+                RoundId = roundId,
+                GameId = 1,
+                PlayerCode = "playerCode",
+                ExternalRoundId = "external1",
+                Turnover = 100,
+                EffectiveBettingPercentage = 100,
+                GameType = GameType.Sportsbook
+            }
+        };
+
+        fakeTgsRepository.GetPlayerRoundsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
+            .Returns(rounds.ToAsyncEnumerable());
 
         fakePlayerBucketService.GetBrandBucketTypesAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new[] { BucketGameType.CardGame });
@@ -130,14 +136,16 @@ public class PlayerBucketTest
 
         var sut = new FillInPlayerBucketClient(httpClient);
 
-        await sut.FillPlayerBucketMinutelyAsync(new(DateTime.Parse("2023-08-01 00:15:00Z")));
+        var now = DateTime.Parse("2023-08-01 00:15:00Z");
+
+        await sut.FillPlayerBucketMinutelyAsync(new(now));
 
         await fakeRedisDatabase.Received(1).SetAddAsync(
-            Arg.Is((RedisKey)"fillIn:2023/8/1:1:playerCode"),
+            Arg.Is((RedisKey)rounds[0].GetRedisKey(now)),
             Arg.Is((RedisValue)"external1"));
 
         await fakeRedisDatabase.Received(1).KeyExpireAsync(
-            Arg.Is((RedisKey)"fillIn:2023/8/1:1:playerCode"),
+            Arg.Is((RedisKey)rounds[0].GetRedisKey(now)),
             Arg.Is(TimeSpan.FromDays(49)));
 
         await fakePlayerBucketService.Received(1).FillInPlayerMainBucketAsync(
