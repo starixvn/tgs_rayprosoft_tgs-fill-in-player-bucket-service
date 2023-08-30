@@ -26,7 +26,8 @@ var builder = WebApplication.CreateBuilder(args);
         .AddPlayerBucketTypeClient()
         .AddPlayerBucketClient(httpClientBuilder => httpClientBuilder
             .ConfigureHttpClient(httpClient => httpClient.BaseAddress =
-                builder.Configuration.GetValue<Uri>("FillInPlayerBucket:PlayerBucketBaseUrl")));
+                builder.Configuration.GetValue<Uri>("FillInPlayerBucket:PlayerBucketBaseUrl")))
+        .AddMemoryCache();
 
     builder.Services
         .AddMessageQueue()
