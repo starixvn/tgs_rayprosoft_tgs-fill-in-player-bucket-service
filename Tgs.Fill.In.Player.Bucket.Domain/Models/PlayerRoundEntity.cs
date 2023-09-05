@@ -14,7 +14,7 @@ public class PlayerRoundEntity
 
     public decimal GetBucketAmount() => Turnover * EffectiveBettingPercentage / 100;
 
-    public string GetRedisKey(DateTime startDateTime) => $"fillIn:{startDateTime:d}:{GameId}:{PlayerCode}";
+    public string GetRedisKey(DateTime startDateTime) => $"fillIn:{startDateTime:yyyyMMdd}:{GameId}:{PlayerCode}";
 
     public string GetRedisValue() => ExternalRoundId;
 

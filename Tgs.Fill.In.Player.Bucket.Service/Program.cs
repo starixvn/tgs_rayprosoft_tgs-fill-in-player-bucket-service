@@ -10,8 +10,8 @@ using Tgs.Fill.In.Player.Bucket.Repositories.DependencyInjection;
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Configuration
-    .AddJsonFile("/config/appsettings.json", true)
-    .AddEnvironmentVariables();
+        .AddJsonFile("/config/appsettings.json", true)
+        .AddEnvironmentVariables();
 
     builder.Services
         .AddCore()
@@ -96,12 +96,10 @@ var builder = WebApplication.CreateBuilder(args);
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
-
 }
 
 var app = builder.Build();
 {
-
     app.UseSwaggerUI();
     app.MapControllers();
     app.MapSwagger();

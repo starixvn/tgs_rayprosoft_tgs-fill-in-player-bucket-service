@@ -48,7 +48,7 @@ internal class PlayerBucketService : IPlayerBucketService
             FillType.Game,
             roundId.ToString(),
             remark,
-            bucketTypes?.Intersect(new[]{gameType}).Select(t => t.ToString()),
+            bucketTypes?.Intersect(new[] { gameType }).Select(t => t.ToString()),
             cancellationToken).ConfigureAwait(false);
     }
 }

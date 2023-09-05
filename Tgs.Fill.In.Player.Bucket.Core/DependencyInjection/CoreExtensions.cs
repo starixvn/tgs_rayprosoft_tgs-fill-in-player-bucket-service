@@ -9,7 +9,7 @@ public static class CoreExtensions
     public static IServiceCollection AddCore(this IServiceCollection services)
     {
         services.AddMediatR(r => r.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
-            .AddTransient<IPlayerBucketService,PlayerBucketService>();
+            .AddTransient<IPlayerBucketService, PlayerBucketService>();
 
         return services;
     }
