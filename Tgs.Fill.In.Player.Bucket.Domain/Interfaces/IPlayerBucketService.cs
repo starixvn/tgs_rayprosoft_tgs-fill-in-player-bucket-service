@@ -4,6 +4,6 @@ public interface IPlayerBucketService
 {
     Task<IEnumerable<BucketGameType>?> GetBrandBucketTypesAsync(Guid brandId, CancellationToken cancellationToken);
 
-    Task FillInPlayerGameTypeBucketAsync(BucketGameType gameType, Guid roundId, string playerCode,
+    Task FillInPlayerGameTypeBucketAsync(Guid brandId, BucketGameType gameType, Guid roundId, string playerCode,
         decimal bucketAmount, string remark, CancellationToken cancellationToken);
 }

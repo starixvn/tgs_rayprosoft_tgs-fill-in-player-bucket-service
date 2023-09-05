@@ -37,10 +37,10 @@ internal class PlayerBucketService : IPlayerBucketService
             });
     }
 
-    public async Task FillInPlayerGameTypeBucketAsync(BucketGameType gameType, Guid roundId, string playerCode,
+    public async Task FillInPlayerGameTypeBucketAsync(Guid brandId, BucketGameType gameType, Guid roundId, string playerCode,
         decimal bucketAmount, string remark, CancellationToken cancellationToken)
     {
-        var bucketTypes = await GetBrandBucketTypesAsync(Guid.NewGuid(), cancellationToken);
+        var bucketTypes = await GetBrandBucketTypesAsync(brandId, cancellationToken);
 
         await _playerBucketForTypesClient.FillInBucketForBucketTypesAsync(
             playerCode,

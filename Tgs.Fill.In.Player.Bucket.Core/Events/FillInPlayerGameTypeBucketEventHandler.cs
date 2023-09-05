@@ -39,6 +39,7 @@ internal class FillInPlayerGameTypeBucketEventHandler : INotificationHandler<Fil
             .ExecuteAsync(
                 async () =>
                     await _playerBucketService.FillInPlayerGameTypeBucketAsync(
+                        @event.PlayerRound.BrandId,
                         playerBucketType,
                         @event.PlayerRound.RoundId,
                         @event.PlayerRound.PlayerCode,
