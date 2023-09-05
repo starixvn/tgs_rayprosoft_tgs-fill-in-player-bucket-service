@@ -21,11 +21,13 @@ public class PlayerBucketTest
         var fakePlayerBucketService = Substitute.For<IPlayerBucketService>();
 
         var roundId = Guid.NewGuid();
+        var brandId = Guid.NewGuid();
 
         var rounds = new PlayerRoundEntity[]
         {
             new()
             {
+                BrandId = brandId,
                 RoundId = roundId,
                 GameId = 1,
                 PlayerCode = "playerCode",
@@ -35,6 +37,7 @@ public class PlayerBucketTest
                 GameType = GameType.CardGame
             }
         };
+
         {
             fakeTgsRepository.GetPlayerRoundsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                 .Returns(rounds.ToAsyncEnumerable());
@@ -75,6 +78,7 @@ public class PlayerBucketTest
                 Arg.Is(TimeSpan.FromDays(49)));
 
             await fakePlayerBucketService.Received(1).FillInPlayerGameTypeBucketAsync(
+                Arg.Is(brandId),
                 Arg.Any<BucketGameType>(),
                 Arg.Is(roundId),
                 Arg.Is("playerCode"),
@@ -92,6 +96,7 @@ public class PlayerBucketTest
         var fakeRedisDatabase = Substitute.For<IDatabase>();
         var fakePlayerBucketService = Substitute.For<IPlayerBucketService>();
 
+        var brandId = Guid.NewGuid();
         var roundId = Guid.NewGuid();
         {
             fakeTgsRepository.GetPlayerRoundsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
@@ -148,6 +153,7 @@ public class PlayerBucketTest
                 Arg.Any<DateTime>());
 
             await fakePlayerBucketService.Received(0).FillInPlayerGameTypeBucketAsync(
+                Arg.Is(brandId),
                 Arg.Any<BucketGameType>(),
                 Arg.Any<Guid>(),
                 Arg.Any<string>(),
@@ -165,6 +171,7 @@ public class PlayerBucketTest
         var fakeRedisDatabase = Substitute.For<IDatabase>();
         var fakePlayerBucketService = Substitute.For<IPlayerBucketService>();
 
+        var brandId = Guid.NewGuid();
         {
             fakeTgsRepository.GetPlayerRoundsAsync(Arg.Any<DateTime>(), Arg.Any<DateTime>())
                 .Returns(Array.Empty<PlayerRoundEntity>().ToAsyncEnumerable());
@@ -208,6 +215,7 @@ public class PlayerBucketTest
                 Arg.Any<DateTime>());
 
             await fakePlayerBucketService.Received(0).FillInPlayerGameTypeBucketAsync(
+                Arg.Is(brandId),
                 Arg.Any<BucketGameType>(),
                 Arg.Any<Guid>(),
                 Arg.Any<string>(),

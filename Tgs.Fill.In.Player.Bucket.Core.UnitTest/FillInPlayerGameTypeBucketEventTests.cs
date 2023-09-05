@@ -23,6 +23,7 @@ public class FillInPlayerGameTypeBucketEventTests
 
         var request = new FillInPlayerBucketEvent(new()
         {
+            BrandId = Guid.NewGuid(),
             RoundId = Guid.NewGuid(),
             PlayerCode = "playerCode",
             Turnover = 100,
@@ -33,6 +34,7 @@ public class FillInPlayerGameTypeBucketEventTests
         await sut.Handle(request, default);
 
         await fakePlayerBucketService.Received(1).FillInPlayerGameTypeBucketAsync(
+            Arg.Is(request.PlayerRound.BrandId),
             Arg.Is(BucketGameType.CardGame),
             Arg.Is(request.PlayerRound.RoundId),
             Arg.Is(request.PlayerRound.PlayerCode),
