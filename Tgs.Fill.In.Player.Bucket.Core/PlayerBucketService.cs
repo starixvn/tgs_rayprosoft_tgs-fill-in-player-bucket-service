@@ -27,7 +27,11 @@ internal class PlayerBucketService : IPlayerBucketService
             $"brandBucketType:{brandId}",
             async cacheEntry =>
             {
-                _ = cacheEntry.SetAbsoluteExpiration(TimeSpan.FromDays(1));
+                var now = DateTime.UtcNow;
+
+                var cacheTime = new DateTimeOffset(now.Year, now.Month, now.Day, now.Hour, 0, 0, TimeSpan.Zero).AddHours(1);
+
+                cacheEntry.AbsoluteExpiration = cacheTime;
 
                 var bucketTypes = _playerBucketClient.GetBrandBucketTypesAsync(brandId, cancellationToken);
 
