@@ -42,8 +42,7 @@ internal class FillInPlayerBucketHandler : IRequestHandler<FillInPlayerBucketReq
             var rounds = _tgsRepository.GetPlayerRoundsAsync(request.StartDateTime, request.StartDateTime.AddMinutes(1),
                 cancellationToken);
 
-            await rounds.ForEachAsync(
-                round => _mediator.Publish(new AddRoundRecordEvent(round, request.StartDateTime),
+            await rounds.ForEachAwaitAsync(async round => await _mediator.Publish(new AddRoundRecordEvent(round, request.StartDateTime),
                     cancellationToken), cancellationToken);
         }
     }
