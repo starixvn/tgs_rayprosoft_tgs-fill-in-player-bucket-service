@@ -27,9 +27,13 @@ internal class AddPlayerRoundRecordEventHandler : INotificationHandler<AddRoundR
         {
             await db.SetAddAsync(key, value);
 
-            await db.KeyExpireAsync(key, TimeSpan.FromDays(49));
+            if (await db.KeyTimeToLiveAsync(key) is null)
+            {
+                await db.KeyExpireAsync(key, TimeSpan.FromDays(49));
+            }
 
-            await _mediator.Publish(new FillInPlayerBucketEvent(@event.PlayerRound, @event.StartDateTime),
+            await _mediator.Publish(
+                new FillInPlayerBucketEvent(@event.PlayerRound, @event.StartDateTime),
                 cancellationToken);
         }
     }

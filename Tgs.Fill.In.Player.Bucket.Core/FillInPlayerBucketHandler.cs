@@ -37,7 +37,10 @@ internal class FillInPlayerBucketHandler : IRequestHandler<FillInPlayerBucketReq
         {
             await db.SetAddAsync(key, request.StartDateTime.ToTimestamp().Seconds);
 
-            await db.KeyExpireAsync(key, TimeSpan.FromDays(7));
+            if (await db.KeyTimeToLiveAsync(key) is null)
+            {
+                await db.KeyExpireAsync(key, TimeSpan.FromDays(7));
+            }
 
             var rounds = _tgsRepository.GetPlayerRoundsAsync(request.StartDateTime, request.StartDateTime.AddMinutes(1),
                 cancellationToken);
