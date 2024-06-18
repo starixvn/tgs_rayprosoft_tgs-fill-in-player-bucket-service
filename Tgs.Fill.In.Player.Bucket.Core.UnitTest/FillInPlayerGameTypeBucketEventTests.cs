@@ -1,3 +1,4 @@
+using MediatR;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Tgs.Fill.In.Player.Bucket.Core.Events;
@@ -13,10 +14,12 @@ public class FillInPlayerGameTypeBucketEventTests
     public async Task Fill_In_Player_Game_Type_Bucket()
     {
         var fakePlayerBucketService = Substitute.For<IPlayerBucketService>();
+        var fakeMediator = Substitute.For<IMediator>();
 
         var sut = new FillInPlayerGameTypeBucketEventHandler(
             NullLogger<FillInPlayerGameTypeBucketEventHandler>.Instance,
-            fakePlayerBucketService);
+            fakePlayerBucketService,
+            fakeMediator);
 
         fakePlayerBucketService.GetBrandBucketTypesAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new[] { BucketGameType.CardGame });

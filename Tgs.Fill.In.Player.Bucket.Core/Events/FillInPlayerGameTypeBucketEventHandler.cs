@@ -10,11 +10,14 @@ internal class FillInPlayerGameTypeBucketEventHandler : INotificationHandler<Fil
 {
     private readonly ILogger<FillInPlayerGameTypeBucketEventHandler> _logger;
     private readonly IPlayerBucketService _playerBucketService;
+    private readonly IMediator _mediator;
 
     public FillInPlayerGameTypeBucketEventHandler(ILogger<FillInPlayerGameTypeBucketEventHandler> logger,
-        IPlayerBucketService playerBucketService)
+        IPlayerBucketService playerBucketService,
+        IMediator mediator)
     {
         _logger = logger;
+        _mediator = mediator;
         _playerBucketService = playerBucketService;
     }
 
@@ -27,16 +30,16 @@ internal class FillInPlayerGameTypeBucketEventHandler : INotificationHandler<Fil
             @event.PlayerRound.PlayerCode, @event.PlayerRound.GameType, playerBucketType,
             @event.PlayerRound.GetBucketAmount(), @event.StartDateTime);
 
-        await Policy.Handle<Exception>()
+        var result = await Policy.Handle<Exception>()
             .RetryAsync(
-                3,
+                1,
                 (exception, retryCount) => _logger.LogError(
                     "PlayerCode:{PlayerCode} BucketAmount:{BucketAmount} retryCount:{retryCount} Exception:{exception}",
                     @event.PlayerRound.PlayerCode,
                     @event.PlayerRound.GetBucketAmount(),
                     retryCount,
                     exception))
-            .ExecuteAsync(
+            .ExecuteAndCaptureAsync(
                 async () =>
                     await _playerBucketService.FillInPlayerGameTypeBucketAsync(
                         @event.PlayerRound.BrandId,
@@ -46,5 +49,12 @@ internal class FillInPlayerGameTypeBucketEventHandler : INotificationHandler<Fil
                         @event.PlayerRound.GetBucketAmount(),
                         "",
                         cancellationToken).ConfigureAwait(false));
+
+        if (result.FinalException != null)
+        {
+            await _mediator.Publish(
+                new FillInPlayerBucketFailedEvent(@event.PlayerRound, @event.StartDateTime),
+                cancellationToken);
+        }
     }
 }
