@@ -27,4 +27,15 @@ public class FillInPlayerBucketClient : IFillInPlayerBucketClient
 
         _ = response.EnsureSuccessStatusCode();
     }
+
+    public async Task FillInFailedRecordAsync()
+    {
+        var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/api/playerBucket/fill-in-failed-records")
+        {
+            Content = new StringContent("", Encoding.UTF8, "application/json")
+        };
+        var response = await _client.SendAsync(httpRequest).ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+    }
 }

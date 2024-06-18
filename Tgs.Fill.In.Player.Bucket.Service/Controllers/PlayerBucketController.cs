@@ -18,7 +18,7 @@ public class PlayerBucketController : ControllerBase
     [HttpPost("fillIn/{startDate}")]
     public Task FillInPlayerBucketAsync(DateTime startDate) => _mediator.Send(new FillInPlayerBucketRequest(startDate));
 
-    [HttpGet("failed-records")]
+    [HttpGet("fill-in-failed-records")]
     public Task FillInPlayerBucketFailedRecordsAsync()
     {
         return _mediator.Send(new FillInPlayerBucketFromFailedRecordRequest());
