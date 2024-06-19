@@ -33,6 +33,9 @@ build-code:
     untracked: true
 
 unit-test:
+  variables:
+    GIT_STRATEGY: none
+    Framework: net7.0
   stage: test
   script:
     - dotnet test -c $BuildConfiguration -l:"junit;LogFilePath=../TestReports/{assembly}-TestReport.xml" --no-restore --no-build
