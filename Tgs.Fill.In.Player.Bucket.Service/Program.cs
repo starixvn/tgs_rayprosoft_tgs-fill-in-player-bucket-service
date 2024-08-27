@@ -6,9 +6,11 @@ using OpenTelemetry.Trace;
 using Tgs.Fill.In.Player.Bucket.Core.DependencyInjection;
 using Tgs.Fill.In.Player.Bucket.Redis.DependencyInjection;
 using Tgs.Fill.In.Player.Bucket.Repositories.DependencyInjection;
+using Tgs.PlayerService.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 {
+    builder.WebHost.UseSentry();
     builder.Configuration
         .AddJsonFile("/config/appsettings.json", true)
         .AddEnvironmentVariables();
@@ -70,16 +72,15 @@ var builder = WebApplication.CreateBuilder(args);
         });
 
     builder.Services.AddOpenTelemetry()
-        .WithTracing(builder => builder
-            .SetResourceBuilder(ResourceBuilder.CreateDefault()
-                .AddEnvironmentVariableDetector())
+        .ConfigureResource(_ => _.AddService(builder.Configuration.GetValue<string>("OTEL:OTEL_SERVICE_NAME")))
+        .WithTracing(traceProviderBuilder => traceProviderBuilder
             .AddSource("Tgs.*")
             .AddSource("TGS.*")
             .AddAspNetCoreInstrumentation()
             .AddHttpClientInstrumentation()
             .AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
             .AddProfileViewExporter()
-            .AddOtlpExporter())
+            .AddOtlpExporter(options => options.Endpoint = builder.Configuration.GetValue<Uri>("OTEL:OTEL_COLLECTOR")))
         .Services
         .Configure<AspNetCoreInstrumentationOptions>(options => options.Filter =
             httpContext => !httpContext.Request.Path.HasValue
@@ -96,6 +97,7 @@ var builder = WebApplication.CreateBuilder(args);
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+    builder.Services.AddScoped<ExceptionMiddleware>();
 }
 
 var app = builder.Build();
@@ -104,6 +106,7 @@ var app = builder.Build();
     app.MapControllers();
     app.MapSwagger();
     app.MapHealthChecks("/healthz");
+    app.UseMiddleware<ExceptionMiddleware>();
 
     app.Run();
 }
