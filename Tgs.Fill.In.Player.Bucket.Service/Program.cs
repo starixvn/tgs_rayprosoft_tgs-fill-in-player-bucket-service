@@ -50,9 +50,9 @@ var builder = WebApplication.CreateBuilder(args);
             options.ParseStateValues = true;
             _ = options.AddFluentdForwardExporter(fluentOptions =>
             {
-                var nodeIp = builder.Configuration.GetValue<string>("NODE_IP");
+                var nodeIp = builder.Configuration.GetValue<string>("OTEL:NODE_IP");
                 fluentOptions.Host = nodeIp!;
-                fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME")!;
+                fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL:OTEL_SERVICE_NAME")!;
                 fluentOptions.UseMessagePack();
             });
         });
